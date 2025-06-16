@@ -76,6 +76,7 @@ spacy-loggers==1.0.3
 srsly==1.0.5
 streamlit==1.12.2
 streamlit-tags==1.2.8
+sqlitecloud
 tenacity==8.0.1
 thinc==7.4.5
 toml==0.10.2
