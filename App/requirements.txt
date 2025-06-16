@@ -1,3 +1,5 @@
+setuptools>=65.0
+wheel
 altair==4.2.0
 attrs==22.1.0
 blinker==1.5
@@ -91,5 +93,3 @@ validators==0.20.0
 wasabi==0.10.1
 watchdog==2.1.9
 zipp==3.8.1
-setuptools
-wheel
