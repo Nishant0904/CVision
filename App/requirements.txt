@@ -70,7 +70,6 @@ six==1.16.0
 smart-open==5.2.1
 smmap==5.0.0
 sortedcontainers==2.4.0
-spacy==2.3.5
 spacy-legacy==3.0.10
 spacy-loggers==1.0.3
 srsly==1.0.5
@@ -92,5 +91,6 @@ validators==0.20.0
 wasabi==0.10.1
 watchdog==2.1.9
 zipp==3.8.1
-spacy
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz
+spacy==3.7.1
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+
