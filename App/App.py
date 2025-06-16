@@ -39,24 +39,26 @@ def pdf_reader(file):
     fake_file_handle = io.StringIO()
     converter = TextConverter(resource_manager, fake_file_handle, laparams=LAParams())
     page_interpreter = PDFPageInterpreter(resource_manager, converter)
-    with open(file, 'rb') as fh:
-        for page in PDFPage.get_pages(fh,
-                                      caching=True,
-                                      check_extractable=True):
-            page_interpreter.process_page(page)
-            print(page)
-        text = fake_file_handle.getvalue()
-
-    ## close open handles
+    
+    # file is a BytesIO stream
+    for page in PDFPage.get_pages(file, caching=True, check_extractable=True):
+        page_interpreter.process_page(page)
+    
+    text = fake_file_handle.getvalue()
     converter.close()
     fake_file_handle.close()
     return text
 
 # show uploaded file path to view pdf_display
-def show_pdf(file_path):
-    with open(file_path, "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-    pdf_display = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
+def show_pdf(file_path_or_obj):
+    if isinstance(file_path_or_obj, str):
+        with open(file_path_or_obj, "rb") as f:
+            pdf_data = f.read()
+    else:
+        pdf_data = file_path_or_obj.read()  # for BytesIO
+
+    base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 # course recommendations which has data already loaded from Courses.py
@@ -196,6 +198,7 @@ def run():
             with st.spinner('Hang On While We Cook Magic For You...'):
                 time.sleep(4)
         
+            os.makedirs('./Uploaded_Resumes', exist_ok=True)
             ### saving the uploaded resume to folder
             save_image_path = './Uploaded_Resumes/'+pdf_file.name
             pdf_name = pdf_file.name
