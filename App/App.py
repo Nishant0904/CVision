@@ -9,6 +9,7 @@ import socket
 import secrets
 import io,random
 import plotly.express as px # to create visualisations at the admin session
+import sqlitecloud
 # libraries used to parse the pdf files
 import nltk
 nltk.data.path.append('./nltk_data')
@@ -74,23 +75,76 @@ def course_recommender(course_list):
     return rec_course
 
 # sql connector
-connection = pymysql.connect(host='localhost',user='root',password='nishant@2004',db='cv')
+connection = sqlitecloud.connect("sqlitecloud://cpzlbheynk.g2.sqlite.cloud:8860/cv?apikey=zSGLb725ClMGYsZ0rJ2qsWognqCJWitM108V3uBX8f4")
 cursor = connection.cursor()
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS user_data (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sec_token TEXT,
+    host_name TEXT,
+    dev_user TEXT,
+    act_name TEXT,
+    act_mail TEXT,
+    act_mob TEXT,
+    name TEXT,
+    email TEXT,
+    res_score TEXT,
+    timestamp TEXT,
+    no_of_pages TEXT,
+    reco_field TEXT,
+    cand_level TEXT,
+    skills TEXT,
+    recommended_skills TEXT,
+    courses TEXT,
+    pdf_name TEXT
+);
+''')
+
+# Create user_feedback table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS user_feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    feed_name TEXT,
+    feed_email TEXT,
+    feed_score TEXT,
+    comments TEXT,
+    timestamp TEXT
+);
+''')
+
+# Commit changes and close
+connection.commit()
 
 # inserting miscellaneous data, fetched results, prediction and recommendation into user_data table
-def insert_data(sec_token,host_name,dev_user,act_name,act_mail,act_mob,name,email,res_score,timestamp,no_of_pages,reco_field,cand_level,skills,recommended_skills,courses,pdf_name):
+def insert_data(sec_token, host_name, dev_user, act_name, act_mail, act_mob,
+                name, email, res_score, timestamp, no_of_pages,
+                reco_field, cand_level, skills, recommended_skills,
+                courses, pdf_name):
     DB_table_name = 'user_data'
-    insert_sql = "insert into " + DB_table_name + """
-    values (0,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-    rec_values = (str(sec_token),host_name,dev_user,act_name,act_mail,act_mob,name,email,str(res_score),timestamp,str(no_of_pages),reco_field,cand_level,skills,recommended_skills,courses,pdf_name)
+    insert_sql = f"""
+    INSERT INTO {DB_table_name}
+    (sec_token, host_name, dev_user, act_name, act_mail, act_mob, name,
+     email, res_score, timestamp, no_of_pages, reco_field, cand_level,
+     skills, recommended_skills, courses, pdf_name)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+    
+    rec_values = (
+        str(sec_token), host_name, dev_user, act_name, act_mail, act_mob,
+        name, email, str(res_score), timestamp, str(no_of_pages),
+        reco_field, cand_level, skills, recommended_skills, courses, pdf_name
+    )
     cursor.execute(insert_sql, rec_values)
     connection.commit()
 
+
 # inserting feedback data into user_feedback table
-def insertf_data(feed_name,feed_email,feed_score,comments,Timestamp):
+def insertf_data(feed_name, feed_email, feed_score, comments, Timestamp):
     DBf_table_name = 'user_feedback'
-    insertfeed_sql = "insert into " + DBf_table_name + """
-    values (0,%s,%s,%s,%s,%s)"""
+    insertfeed_sql = f"""
+    INSERT INTO {DBf_table_name}
+    (feed_name, feed_email, feed_score, comments, timestamp)
+    VALUES (?, ?, ?, ?, ?)"""
+    
     rec_values = (feed_name, feed_email, feed_score, comments, Timestamp)
     cursor.execute(insertfeed_sql, rec_values)
     connection.commit()
@@ -497,7 +551,7 @@ def run():
             if ad_user == 'admin' and ad_password == '12345':
                 
                 ### Fetch miscellaneous data from user_data(table) and convert it into dataframe
-                cursor.execute('''SELECT ID,res_score, convert(reco_field using utf8), convert(cand_level using utf8) from user_data''')
+                cursor.execute('''SELECT ID, res_score, reco_field, cand_level FROM user_data''')
                 datanalys = cursor.fetchall()
                 plot_data = pd.DataFrame(datanalys, columns=['Idt', 'res_score', 'reco_field', 'User_Level'])
                 
@@ -506,7 +560,10 @@ def run():
                 st.success("Welcome Nishant ! Total %d " % values + " User's Have Used Our Tool : )")                
                 
                 ### Fetch user data from user_data(table) and convert it into dataframe
-                cursor.execute('''SELECT ID, sec_token,  act_name, act_mail, act_mob, convert(reco_field using utf8), Timestamp, name, email, res_score, pdf_name, convert(cand_level using utf8), convert(skills using utf8), convert(Recommended_skills using utf8), convert(courses using utf8), dev_user from user_data''')
+                cursor.execute('''SELECT ID, sec_token, act_name, act_mail, act_mob, 
+       reco_field, Timestamp, name, email, res_score, pdf_name, 
+       cand_level, skills, Recommended_skills, courses, dev_user 
+FROM user_data;''')
                 data = cursor.fetchall()                
 
                 st.header("**User's Data**")
