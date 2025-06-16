@@ -30,13 +30,6 @@ from Courses import ds_course,web_course,android_course,ios_course,uiux_course,r
 base_dir = os.path.dirname(__file__)
 # Generates a link allowing the data in a given panda dataframe to be downloaded in csv format 
 
-def ensure_spacy_model():
-    model_name = "en_core_web_sm"
-    if importlib.util.find_spec(model_name) is None:
-        subprocess.run(["python", "-m", "spacy", "download", model_name])
-
-ensure_spacy_model()
-
 def get_csv_download_link(df,filename,text):
     csv = df.to_csv(index=False)
     ## bytes conversions
