@@ -11,6 +11,9 @@ import secrets
 import io,random
 import plotly.express as px # to create visualisations at the admin session
 import sqlitecloud
+import spacy
+import subprocess
+import importlib.util
 # libraries used to parse the pdf files
 import nltk
 nltk.data.path.append('./nltk_data')
