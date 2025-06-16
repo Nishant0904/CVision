@@ -23,7 +23,7 @@ from streamlit_tags import st_tags
 from PIL import Image
 # pre stored data for prediction purposes
 from Courses import ds_course,web_course,android_course,ios_course,uiux_course,resume_videos,interview_videos
-
+base_dir = os.path.dirname(__file__)
 # Generates a link allowing the data in a given panda dataframe to be downloaded in csv format 
 def get_csv_download_link(df,filename,text):
     csv = df.to_csv(index=False)
@@ -157,7 +157,7 @@ st.set_page_config(
 
 def run():
     
-    img = Image.open('./Logo/hq720.jpg')
+    img = Image.open(os.path.join(base_dir, 'Logo', 'hq720.jpg'))
     st.image(img)
     st.sidebar.markdown(
         """
