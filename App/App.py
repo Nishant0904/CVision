@@ -10,6 +10,8 @@ import secrets
 import io,random
 import plotly.express as px # to create visualisations at the admin session
 # libraries used to parse the pdf files
+import nltk
+nltk.data.path.append('./nltk_data')
 from pyresparser import ResumeParser
 from pdfminer3.layout import LAParams
 from pdfminer3.pdfpage import PDFPage
@@ -20,8 +22,6 @@ from streamlit_tags import st_tags
 from PIL import Image
 # pre stored data for prediction purposes
 from Courses import ds_course,web_course,android_course,ios_course,uiux_course,resume_videos,interview_videos
-import nltk
-nltk.data.path.append('./nltk_data')
 
 # Generates a link allowing the data in a given panda dataframe to be downloaded in csv format 
 def get_csv_download_link(df,filename,text):
