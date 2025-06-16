@@ -5,6 +5,7 @@ import base64, random
 import time,datetime
 import pymysql
 import os
+import getpass
 import socket
 import secrets
 import io,random
@@ -184,7 +185,7 @@ def run():
         act_mob  = st.text_input('Mobile Number*')
         sec_token = secrets.token_urlsafe(12)
         host_name = socket.gethostname()
-        dev_user = os.getlogin()
+        dev_user = getpass.getuser()
 
         # Upload Resume
         st.markdown('''<h5 style='text-align: left; color: #4a6ee0;'> Upload Your Resume, And Get Smart Recommendations</h5>''',unsafe_allow_html=True)
